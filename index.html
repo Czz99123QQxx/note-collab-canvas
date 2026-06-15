@@ -17,7 +17,7 @@
         .tip { text-align: center; font-size: 12px; color: #7f8c8d; margin-bottom: 18px; }
         .piano-container { background: #f0f2f5; border-radius: 28px; padding: 16px 12px; margin: 20px 0; overflow-x: auto; box-shadow: inset 0 1px 3px #0001, 0 2px 6px #e2e6ea; }
         .piano { display: flex; min-width: max-content; }
-        .key { cursor: pointer; transition: 0.05s linear; position: relative; }
+        .key { cursor: pointer; transition: 0.05s linear; position: relative; user-select: none; -webkit-touch-callout: none; touch-action: manipulation; }
         .white-key { width: 44px; height: 150px; background: white; border: 1px solid #cdd3d9; border-radius: 0 0 12px 12px; box-shadow: 0 1px 2px rgba(0,0,0,0.05); }
         .black-key { width: 28px; height: 96px; background: #424242; margin-left: -14px; margin-right: -14px; z-index: 2; border-radius: 0 0 10px 10px; border-bottom: 2px solid #c0a46a; }
         .key.selected { background: #e6eef7; transform: scale(0.97); }
@@ -27,11 +27,11 @@
         .black-key .key-label { color: #efdfb7; }
         .collab-canvas { background: #ffffff; border-radius: 28px; padding: 16px; margin: 20px 0; border: 1px solid #eef2f6; box-shadow: 0 4px 12px rgba(0,0,0,0.02); }
         .canvas-header { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; margin-bottom: 18px; gap: 12px; }
-        .online-badge { background: #eef3fa; padding: 5px 18px; border-radius: 60px; font-size: 12px; color: #345; }
+        .online-badge { background: #eef3fa; padding: 5px 18px; border-radius: 60px; font-size: 12px; color: #345; display: flex; align-items: center; gap: 6px; }
         .activity-feed { background: #f8fafd; border-radius: 24px; padding: 8px 14px; max-height: 90px; overflow-y: auto; font-size: 11px; color: #506578; width: 280px; border: 1px solid #e9edf2; font-family: monospace; }
         .feed-item { border-bottom: 1px solid #e2e8f0; padding: 5px 0; }
         .grid-container { display: grid; grid-template-columns: repeat(20, minmax(40px, 52px)); gap: 5px; justify-content: center; overflow-x: auto; padding: 12px 0; background: #fbfdfe; border-radius: 20px; max-height: 520px; overflow-y: auto; }
-        .pixel-note { background: #f4f7fb; border-radius: 14px; aspect-ratio: 1 / 1; display: flex; flex-direction: column; align-items: center; justify-content: center; font-size: 12px; font-weight: 600; cursor: pointer; transition: 0.05s linear; border: 1px solid #dee4ec; color: #2c4e6e; }
+        .pixel-note { background: #f4f7fb; border-radius: 14px; aspect-ratio: 1 / 1; display: flex; flex-direction: column; align-items: center; justify-content: center; font-size: 12px; font-weight: 600; cursor: pointer; transition: 0.05s linear; border: 1px solid #dee4ec; color: #2c4e6e; user-select: none; -webkit-touch-callout: none; touch-action: manipulation; }
         .pixel-note.has-note { background: #ebf0f8; border-color: #b9c8e8; }
         .pixel-note.rest { background: #f1f3f6; opacity: 0.85; }
         .note-symbol { font-size: 13px; font-weight: 700; }
@@ -56,6 +56,7 @@
         .export-btn { background: #54809b; }
         .toast-msg { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); background: #2f4156; color: #fef5e0; padding: 8px 20px; border-radius: 60px; font-size: 12px; z-index: 1100; }
         .scroll-hint { text-align: center; font-size: 11px; color: #888; margin-top: 4px; }
+        .status-dot { width: 10px; height: 10px; border-radius: 50%; background: gray; display: inline-block; margin-right: 5px; }
         @media (max-width: 680px) {
             .white-key { width: 34px; height: 130px; }
             .black-key { width: 24px; margin-left: -12px; margin-right: -12px; }
@@ -94,7 +95,7 @@
 
     <div class="collab-canvas">
         <div class="canvas-header">
-            <div class="online-badge" id="onlineCounter">🌐 共同創作 · 即時同步</div>
+            <div class="online-badge" id="onlineCounter">🌐 共同創作 · 即時同步 <span id="connDot" class="status-dot" style="background:#2e7d32;"></span></div>
             <div class="activity-feed" id="activityFeed"><div class="feed-item">✨ 點擊方格，留下你的音符，全球即時可見</div></div>
         </div>
         <div class="grid-container" id="collabGrid"></div>
@@ -317,6 +318,7 @@
     let activityLogs = [];
     let currentSpeed = 0.5;
     let isPlaying = false, playTimeout = null, audioCtx = null, seekTarget = -1;
+    let savedPlayIndex = 0;
     let currentLang = 'zh_TW';
     let realtimeChannel = null;
 
@@ -375,7 +377,20 @@
         }
     }
 
-    // ========== 网格渲染 & 数据加载 ==========
+    // ========== 网格渲染 & 单格更新 ==========
+    function updateSingleCell(row, col, noteData) {
+        const container = document.getElementById('collabGrid');
+        if (!container) return;
+        const idx = row * COLS + col;
+        const cellDiv = container.children[idx];
+        if (!cellDiv) return;
+        const hasNote = noteData !== null;
+        const noteName = hasNote ? noteData.name : '⏸';
+        const creatorName = hasNote ? (noteData.creator || '匿名').slice(0, 6) : '';
+        cellDiv.className = `pixel-note ${hasNote ? 'has-note' : 'rest'}`;
+        cellDiv.innerHTML = `<div class="note-symbol">${hasNote ? noteName.split('#')[0] : '⏸'}</div><div class="creator-tag">${creatorName || '⚡'}</div>`;
+    }
+
     function renderGrid() {
         const container = document.getElementById('collabGrid');
         if (!container) return;
@@ -463,7 +478,7 @@
                         gridData[row][col] = newRecord.note_name && newRecord.note_freq
                             ? { name: newRecord.note_name, freq: newRecord.note_freq, creator: newRecord.creator }
                             : null;
-                        renderGrid();
+                        updateSingleCell(row, col, gridData[row][col]);
                         addActivityFeed(`🔄 格子 (${row},${col}) 已更新`);
                     }
                 } else if (eventType === 'DELETE') {
@@ -471,18 +486,22 @@
                     col = oldRecord?.col_num;
                     if (row !== undefined && col !== undefined) {
                         gridData[row][col] = null;
-                        renderGrid();
+                        updateSingleCell(row, col, null);
                         addActivityFeed(`🗑️ 格子 (${row},${col}) 已清空`);
                     }
                 }
             })
             .subscribe((status, err) => {
+                const dot = document.getElementById('connDot');
                 if (status === 'SUBSCRIBED') {
                     console.log('✅ Realtime 订阅成功');
+                    if (dot) dot.style.background = '#2e7d32';
                     addActivityFeed('✅ 即時連線已建立');
                 } else if (err) {
                     console.error('❌ Realtime 订阅失败:', err);
-                    toast('实时连接失败，请刷新页面');
+                    if (dot) dot.style.background = '#c62828';
+                    toast('实时连接失败，5秒后重试');
+                    setTimeout(() => subscribeToRealtime(), 5000);
                 }
             });
     }
@@ -559,8 +578,10 @@
                 : t('placeRest').replace('{user}', creator).replace('{x}', row).replace('{y}', col);
             addActivityFeed(msg);
 
-            // 本地播放预览音
-            if (newNoteObj && audioCtx) {
+            // 本地播放预览音（自动激活音频上下文）
+            if (newNoteObj) {
+                if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                if (audioCtx.state === 'suspended') await audioCtx.resume();
                 let ctx = audioCtx;
                 let osc = ctx.createOscillator(), gain = ctx.createGain();
                 osc.connect(gain);
@@ -570,7 +591,6 @@
                 osc.start();
                 gain.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + 0.4);
                 osc.stop(ctx.currentTime + 0.4);
-                if (ctx.state === 'suspended') ctx.resume();
             }
         }
     }
@@ -635,8 +655,9 @@
         document.getElementById('pauseBtn').disabled = false;
         document.getElementById('playBtn').disabled = true;
 
-        let startIdx = (seekTarget >= 0 && seekTarget < ROWS * COLS) ? seekTarget : 0;
+        let startIdx = (seekTarget >= 0 && seekTarget < ROWS * COLS) ? seekTarget : savedPlayIndex;
         seekTarget = -1;
+        savedPlayIndex = 0;
         playCellByIndex(startIdx);
     }
 
@@ -690,10 +711,17 @@
         document.getElementById('progressBar').style.width = '0%';
         document.getElementById('progressThumb').style.left = '0%';
         highlightGridCell(-1, -1, false);
+        savedPlayIndex = 0;
     }
 
     function pausePlayback() {
-        if (playTimeout) clearTimeout(playTimeout);
+        if (playTimeout) {
+            clearTimeout(playTimeout);
+            playTimeout = null;
+        }
+        const bar = document.getElementById('progressBar');
+        let percent = parseFloat(bar.style.width) / 100 || 0;
+        savedPlayIndex = Math.floor(percent * ROWS * COLS);
         isPlaying = false;
         document.getElementById('pauseBtn').disabled = true;
         document.getElementById('playBtn').disabled = false;
@@ -763,7 +791,6 @@
         a.click();
     }
 
-    // 同步播放速度按钮状态
     function updatePlaybackSpeedUI() {
         document.querySelectorAll('.rhythm-btn').forEach(btn => {
             if (Math.abs(parseFloat(btn.dataset.speed) - currentSpeed) < 0.01)
@@ -781,12 +808,10 @@
         updateUI();
         updatePlaybackSpeedUI();
 
-        // 加载云端数据 + 开启实时订阅
         await loadGridFromSupabase();
         subscribeToRealtime();
         startCooldownTimer();
 
-        // 按钮事件绑定
         document.getElementById('playBtn').onclick = playGrid;
         document.getElementById('pauseBtn').onclick = pausePlayback;
         document.getElementById('stopBtn').onclick = stopPlayback;
@@ -813,14 +838,12 @@
             };
         });
 
-        // 模拟在线人数
         setInterval(() => {
             let fake = Math.floor(Math.random() * 800 + 800);
-            document.getElementById('onlineCounter').innerHTML = `🌐 共同創作 · 在線 ${fake}`;
+            document.getElementById('onlineCounter').innerHTML = `🌐 共同創作 · 在線 ${fake} <span id="connDot" class="status-dot" style="background:${document.getElementById('connDot')?.style.background || '#2e7d32'}"></span>`;
         }, 8000);
     });
 
-    // 页面卸载清理
     window.addEventListener('beforeunload', () => {
         if (playTimeout) clearTimeout(playTimeout);
         if (cooldownInterval) clearInterval(cooldownInterval);
