@@ -5,318 +5,57 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
     <title>🌍 音符全球共创 · 实时联动版 | 人人平等</title>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            background: #ffffff;
-            font-family: 'Segoe UI', 'Roboto', 'Helvetica Neue', sans-serif;
-            padding: 20px 16px;
-            color: #2c3e2f;
-        }
-
-        .container {
-            max-width: 1500px;
-            margin: 0 auto;
-            background: #ffffff;
-            border-radius: 32px;
-            box-shadow: 0 12px 28px rgba(0, 0, 0, 0.04), 0 0 0 1px #e9ecef;
-            padding: 20px 24px;
-        }
-
-        .demo-banner {
-            background: #f8f9fc;
-            color: #4a627a;
-            border-left: 5px solid #7c8ea0;
-            border-radius: 18px;
-            padding: 12px 20px;
-            margin-bottom: 20px;
-            font-size: 13px;
-            font-weight: 500;
-        }
-
-        .realtime-badge {
-            background: #e8f5e9;
-            color: #2e7d32;
-            border-radius: 60px;
-            padding: 4px 12px;
-            font-size: 11px;
-            margin-left: 12px;
-            display: inline-block;
-        }
-
-        .lang-box {
-            display: flex;
-            justify-content: flex-end;
-            gap: 8px;
-            flex-wrap: wrap;
-            margin-bottom: 16px;
-        }
-
-        .lang-btn {
-            background: #eef2f6;
-            border: none;
-            padding: 5px 12px;
-            border-radius: 40px;
-            font-size: 11px;
-            font-weight: 500;
-            cursor: pointer;
-            color: #3f4b5e;
-        }
-
-        .lang-btn.active {
-            background: #7d8c9e;
-            color: white;
-        }
-
-        h1 {
-            text-align: center;
-            font-size: 1.8rem;
-            font-weight: 500;
-            color: #2c3e4e;
-            margin-bottom: 6px;
-        }
-
-        .tip {
-            text-align: center;
-            font-size: 12px;
-            color: #7f8c8d;
-            margin-bottom: 18px;
-        }
-
-        .piano-container {
-            background: #f0f2f5;
-            border-radius: 28px;
-            padding: 16px 12px;
-            margin: 20px 0;
-            overflow-x: auto;
-        }
-
-        .piano {
-            display: flex;
-            min-width: max-content;
-        }
-
-        .key {
-            cursor: pointer;
-            transition: 0.05s linear;
-            position: relative;
-        }
-
-        .white-key {
-            width: 44px;
-            height: 150px;
-            background: white;
-            border: 1px solid #cdd3d9;
-            border-radius: 0 0 12px 12px;
-        }
-
-        .black-key {
-            width: 28px;
-            height: 96px;
-            background: #424242;
-            margin-left: -14px;
-            margin-right: -14px;
-            z-index: 2;
-            border-radius: 0 0 10px 10px;
-            border-bottom: 2px solid #c0a46a;
-        }
-
-        .key.selected {
-            background: #e6eef7;
-            transform: scale(0.97);
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { background: #ffffff; font-family: 'Segoe UI', 'Roboto', sans-serif; padding: 20px 16px; color: #2c3e2f; }
+        .container { max-width: 1500px; margin: 0 auto; background: #ffffff; border-radius: 32px; box-shadow: 0 12px 28px rgba(0,0,0,0.04), 0 0 0 1px #e9ecef; padding: 20px 24px; }
+        .demo-banner { background: #f8f9fc; color: #4a627a; border-left: 5px solid #7c8ea0; border-radius: 18px; padding: 12px 20px; margin-bottom: 20px; font-size: 13px; font-weight: 500; }
+        .realtime-badge { background: #e8f5e9; color: #2e7d32; border-radius: 60px; padding: 4px 12px; font-size: 11px; margin-left: 12px; display: inline-block; }
+        .lang-box { display: flex; justify-content: flex-end; gap: 8px; flex-wrap: wrap; margin-bottom: 16px; }
+        .lang-btn { background: #eef2f6; border: none; padding: 5px 12px; border-radius: 40px; font-size: 11px; font-weight: 500; cursor: pointer; color: #3f4b5e; }
+        .lang-btn.active { background: #7d8c9e; color: white; }
+        h1 { text-align: center; font-size: 1.8rem; font-weight: 500; color: #2c3e4e; margin-bottom: 6px; }
+        .tip { text-align: center; font-size: 12px; color: #7f8c8d; margin-bottom: 18px; }
+        .piano-container { background: #f0f2f5; border-radius: 28px; padding: 16px 12px; margin: 20px 0; overflow-x: auto; }
+        .piano { display: flex; min-width: max-content; }
+        .key { cursor: pointer; transition: 0.05s linear; position: relative; }
+        .white-key { width: 44px; height: 150px; background: white; border: 1px solid #cdd3d9; border-radius: 0 0 12px 12px; }
+        .black-key { width: 28px; height: 96px; background: #424242; margin-left: -14px; margin-right: -14px; z-index: 2; border-radius: 0 0 10px 10px; border-bottom: 2px solid #c0a46a; }
+        .key.selected { background: #e6eef7; transform: scale(0.97); }
         .white-key.selected { background: #d5e0eb; }
         .black-key.selected { background: #5e5a4c; border-bottom-color: #f3d48f; }
-
-        .key-label {
-            position: absolute;
-            bottom: 8px;
-            left: 0;
-            right: 0;
-            text-align: center;
-            font-size: 9px;
-            font-weight: 600;
-            color: #7c7f82;
-        }
+        .key-label { position: absolute; bottom: 8px; left: 0; right: 0; text-align: center; font-size: 9px; font-weight: 600; color: #7c7f82; }
         .black-key .key-label { color: #efdfb7; }
-
-        .collab-canvas {
-            background: #ffffff;
-            border-radius: 28px;
-            padding: 16px;
-            margin: 20px 0;
-            border: 1px solid #eef2f6;
-        }
-
-        .canvas-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-wrap: wrap;
-            margin-bottom: 18px;
-            gap: 12px;
-        }
-
-        .online-badge {
-            background: #eef3fa;
-            padding: 5px 18px;
-            border-radius: 60px;
-            font-size: 12px;
-            color: #345;
-        }
-
-        .activity-feed {
-            background: #f8fafd;
-            border-radius: 24px;
-            padding: 8px 14px;
-            max-height: 90px;
-            overflow-y: auto;
-            font-size: 11px;
-            color: #506578;
-            width: 280px;
-            border: 1px solid #e9edf2;
-            font-family: monospace;
-        }
-
-        .feed-item {
-            border-bottom: 1px solid #e2e8f0;
-            padding: 5px 0;
-        }
-
-        .grid-container {
-            display: grid;
-            grid-template-columns: repeat(20, minmax(40px, 52px));
-            gap: 5px;
-            justify-content: center;
-            overflow-x: auto;
-            padding: 12px 0;
-            background: #fbfdfe;
-            border-radius: 20px;
-            max-height: 520px;
-            overflow-y: auto;
-        }
-
-        .pixel-note {
-            background: #f4f7fb;
-            border-radius: 14px;
-            aspect-ratio: 1 / 1;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            font-size: 12px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: 0.05s linear;
-            border: 1px solid #dee4ec;
-            color: #2c4e6e;
-        }
-
-        .pixel-note.has-note {
-            background: #ebf0f8;
-            border-color: #b9c8e8;
-        }
-
-        .pixel-note.rest {
-            background: #f1f3f6;
-            opacity: 0.85;
-        }
-
+        .collab-canvas { background: #ffffff; border-radius: 28px; padding: 16px; margin: 20px 0; border: 1px solid #eef2f6; }
+        .canvas-header { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; margin-bottom: 18px; gap: 12px; }
+        .online-badge { background: #eef3fa; padding: 5px 18px; border-radius: 60px; font-size: 12px; color: #345; }
+        .activity-feed { background: #f8fafd; border-radius: 24px; padding: 8px 14px; max-height: 90px; overflow-y: auto; font-size: 11px; color: #506578; width: 280px; border: 1px solid #e9edf2; font-family: monospace; }
+        .feed-item { border-bottom: 1px solid #e2e8f0; padding: 5px 0; }
+        .grid-container { display: grid; grid-template-columns: repeat(20, minmax(40px, 52px)); gap: 5px; justify-content: center; overflow-x: auto; padding: 12px 0; background: #fbfdfe; border-radius: 20px; max-height: 520px; overflow-y: auto; }
+        .pixel-note { background: #f4f7fb; border-radius: 14px; aspect-ratio: 1 / 1; display: flex; flex-direction: column; align-items: center; justify-content: center; font-size: 12px; font-weight: 600; cursor: pointer; transition: 0.05s linear; border: 1px solid #dee4ec; color: #2c4e6e; }
+        .pixel-note.has-note { background: #ebf0f8; border-color: #b9c8e8; }
+        .pixel-note.rest { background: #f1f3f6; opacity: 0.85; }
         .note-symbol { font-size: 13px; font-weight: 700; }
         .creator-tag { font-size: 7px; margin-top: 2px; background: #cddae980; padding: 0 3px; border-radius: 20px; }
-
         .action-buttons { display: flex; justify-content: center; gap: 20px; margin: 16px 0; }
-        .action-btn {
-            background: #f0f2f5;
-            border: none;
-            padding: 8px 28px;
-            border-radius: 60px;
-            font-weight: 600;
-            font-size: 14px;
-            cursor: pointer;
-            color: #2e475c;
-        }
-        .action-btn.active {
-            background: #7c8ea0;
-            color: white;
-        }
-
-        .rhythm-select {
-            text-align: center;
-            margin: 12px 0 20px;
-            display: flex;
-            justify-content: center;
-            gap: 14px;
-            flex-wrap: wrap;
-        }
-        .rhythm-btn {
-            padding: 6px 20px;
-            border: 1px solid #cfddee;
-            background: white;
-            border-radius: 60px;
-            cursor: pointer;
-            font-weight: 500;
-        }
-        .rhythm-btn.active {
-            background: #7c8ea0;
-            border-color: #7c8ea0;
-            color: white;
-        }
-
-        .timer-box {
-            text-align: center;
-            padding: 8px;
-            border-radius: 60px;
-            margin: 12px auto;
-            background: #f0f4f9;
-            font-size: 13px;
-            width: fit-content;
-        }
+        .action-btn { background: #f0f2f5; border: none; padding: 8px 28px; border-radius: 60px; font-weight: 600; font-size: 14px; cursor: pointer; color: #2e475c; }
+        .action-btn.active { background: #7c8ea0; color: white; }
+        .rhythm-select { text-align: center; margin: 12px 0 20px; display: flex; justify-content: center; gap: 14px; flex-wrap: wrap; }
+        .rhythm-btn { padding: 6px 20px; border: 1px solid #cfddee; background: white; border-radius: 60px; cursor: pointer; font-weight: 500; }
+        .rhythm-btn.active { background: #7c8ea0; border-color: #7c8ea0; color: white; }
+        .timer-box { text-align: center; padding: 8px; border-radius: 60px; margin: 12px auto; background: #f0f4f9; font-size: 13px; width: fit-content; }
         .free { background: #dee5ed; color: #2e6240; }
         .cooling { background: #fbebce; color: #be7c3b; }
-
-        .progress-wrap {
-            width: 90%;
-            max-width: 800px;
-            margin: 16px auto;
-            height: 6px;
-            background: #e4e9f0;
-            border-radius: 10px;
-            cursor: pointer;
-            position: relative;
-        }
+        .progress-wrap { width: 90%; max-width: 800px; margin: 16px auto; height: 6px; background: #e4e9f0; border-radius: 10px; cursor: pointer; position: relative; }
         .progress-bar { height: 100%; width: 0%; background: #7f8c9a; border-radius: 10px; }
         .progress-thumb { position: absolute; top: 50%; width: 14px; height: 14px; background: #5b6e7e; border-radius: 50%; transform: translate(-50%, -50%); left: 0%; border: 2px solid white; }
-
         .btn-group { display: flex; justify-content: center; gap: 16px; margin: 20px 0; flex-wrap: wrap; }
         .btn { padding: 8px 28px; border: none; border-radius: 60px; font-weight: 600; cursor: pointer; color: white; background: #7d8f9f; }
         .play-btn { background: #5f8b6f; }
         .pause-btn { background: #c29b4a; }
         .stop-btn { background: #bc7a5e; }
         .export-btn { background: #54809b; }
-
-        .toast-msg {
-            position: fixed;
-            bottom: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: #2f4156;
-            color: #fef5e0;
-            padding: 8px 20px;
-            border-radius: 60px;
-            font-size: 12px;
-            z-index: 1100;
-        }
-
-        @media (max-width: 680px) {
-            .white-key { width: 34px; height: 130px; }
-            .black-key { width: 24px; margin-left: -12px; margin-right: -12px; }
-            .grid-container { grid-template-columns: repeat(20, minmax(32px, 40px)); }
-        }
+        .toast-msg { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); background: #2f4156; color: #fef5e0; padding: 8px 20px; border-radius: 60px; font-size: 12px; z-index: 1100; }
+        @media (max-width: 680px) { .white-key { width: 34px; height: 130px; } .black-key { width: 24px; margin-left: -12px; margin-right: -12px; } .grid-container { grid-template-columns: repeat(20, minmax(32px, 40px)); } }
     </style>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
@@ -324,7 +63,7 @@
 <div class="container">
     <div class="demo-banner">
         🌍 全球即時協作畫板 | 點擊琴鍵選音 → 放置音符 | 人人平等・冷卻90秒
-        <span class="realtime-badge">⚡ 全球連線中</span>
+        <span class="realtime-badge">⚡ 即時同步已啟用</span>
     </div>
     <div class="lang-box" id="langButtons"></div>
     <h1>🎵 音符共同體 · 全球即時協作</h1>
@@ -364,13 +103,12 @@
 </div>
 
 <script>
-    // ========== Supabase 配置 ==========
+    // ========== Supabase 配置（请替换为你的实际值）==========
     const SUPABASE_URL = 'https://nlajqcuxmtkegxmuotwb.supabase.co';
     const SUPABASE_ANON_KEY = 'sb_publishable_gurFjlfB6aBYsOok1OQDew_zJkoYTHn';
-    
     const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
     
-    // ========== 全局變量 ==========
+    // ========== 全局变量 ==========
     const COLS = 20, ROWS = 10;
     let gridData = new Array(ROWS).fill().map(() => new Array(COLS).fill(null));
     let currentPitch = { name: "C4", freq: 261.63 };
@@ -381,15 +119,14 @@
     let currentSpeed = 0.5;
     let isPlaying = false, playTimeout = null, audioCtx = null, seekTarget = -1;
     let currentLang = 'zh_TW';
+    let realtimeChannel = null;   // 实时订阅频道
     
-    // ========== 多語言 ==========
+    // ========== 多语言 ==========
     const languages = {
         zh: { name:"简体", noteMode:"🎵 音符模式", restAction:"⏸️ 休止符模式", slow:"🐢 舒缓", medium:"✨ 适中", fast:"⚡ 轻快", statusFree:"✅ 可放置", statusCool:"⏳ 冷却中", play:"▶ 播放全谱", pause:"⏸ 暂停", stop:"⏹ 停止", export:"📎 导出乐谱", playingEditTip:"播放中请先停止", noMusic:"暂无音符", placeNote:"🎵 {user} 在 ({x},{y}) 放置了 {note}", placeRest:"⏸️ {user} 清空了 ({x},{y})", cooldownMsg:"冷却中 剩余 {sec}秒" },
         zh_TW: { name:"繁體", noteMode:"🎵 音符模式", restAction:"⏸️ 休止符模式", slow:"🐢 舒緩", medium:"✨ 適中", fast:"⚡ 輕快", statusFree:"✅ 可放置", statusCool:"⏳ 冷卻中", play:"▶ 播放全譜", pause:"⏸ 暫停", stop:"⏹ 停止", export:"📎 導出樂譜", playingEditTip:"播放中請先停止", noMusic:"暫無音符", placeNote:"🎵 {user} 在 ({x},{y}) 放置了 {note}", placeRest:"⏸️ {user} 清空了 ({x},{y})", cooldownMsg:"冷卻中 剩餘 {sec}秒" }
     };
-    
     function t(key) { return languages[currentLang]?.[key] || languages.zh_TW?.[key] || key; }
-    
     function updateUI() {
         document.getElementById('noteModeBtn').innerText = t('noteMode');
         document.getElementById('restActionBtn').innerText = t('restAction');
@@ -402,7 +139,6 @@
         document.getElementById('exportBtn').innerText = t('export');
         updateTimerDisplay();
     }
-    
     function buildLangSwitcher() {
         const container = document.getElementById('langButtons');
         container.innerHTML = '';
@@ -420,123 +156,11 @@
         }
     }
     
-    // ========== 從 Supabase 加載數據 ==========
-    async function loadGridFromSupabase() {
-        const { data, error } = await supabase
-            .from('collab_grid')
-            .select('id, row_num, col_num, note_name, note_freq, creator');
-        
-        if (error) {
-            console.error('加載失敗:', error);
-            toast('連線失敗，請刷新頁面');
-            return;
-        }
-        
-        // 重置網格
-        for(let i=0; i<ROWS; i++) {
-            for(let j=0; j<COLS; j++) {
-                gridData[i][j] = null;
-            }
-        }
-        
-        // 填充數據
-        for(let item of data) {
-            const row = item.row_num;
-            const col = item.col_num;
-            if (row >= 0 && row < ROWS && col >= 0 && col < COLS) {
-                if (item.note_name && item.note_freq) {
-                    gridData[row][col] = {
-                        name: item.note_name,
-                        freq: item.note_freq,
-                        creator: item.creator
-                    };
-                } else {
-                    gridData[row][col] = null;
-                }
-            }
-        }
-        renderGrid();
-    }
+    // ========== 辅助函数 ==========
+    function toast(msg) { let d=document.createElement('div'); d.className='toast-msg'; d.innerText=msg; document.body.appendChild(d); setTimeout(()=>d.remove(),2000); }
+    function addActivityFeed(msg) { activityLogs.unshift({text: msg, time: Date.now()}); if(activityLogs.length > 15) activityLogs.pop(); const feed = document.getElementById('activityFeed'); if(feed) feed.innerHTML = activityLogs.map(l => `<div class="feed-item">✨ ${l.text}</div>`).join(''); }
     
-    // ========== 實時訂閱（全球同步核心！）==========
-    function subscribeToRealtime() {
-        supabase
-            .channel('collab_grid_changes')
-            .on('postgres_changes', 
-                { event: 'UPDATE', schema: 'public', table: 'collab_grid' },
-                (payload) => {
-                    const row = payload.new.row_num;
-                    const col = payload.new.col_num;
-                    if (row !== undefined && col !== undefined) {
-                        if (payload.new.note_name && payload.new.note_freq) {
-                            gridData[row][col] = {
-                                name: payload.new.note_name,
-                                freq: payload.new.note_freq,
-                                creator: payload.new.creator
-                            };
-                        } else {
-                            gridData[row][col] = null;
-                        }
-                        renderGrid();
-                        addActivityFeed('🔄 有人更新了畫布');
-                    }
-                }
-            )
-            .on('postgres_changes',
-                { event: 'INSERT', schema: 'public', table: 'collab_grid' },
-                (payload) => {
-                    const row = payload.new.row_num;
-                    const col = payload.new.col_num;
-                    if (row !== undefined && col !== undefined) {
-                        if (payload.new.note_name && payload.new.note_freq) {
-                            gridData[row][col] = {
-                                name: payload.new.note_name,
-                                freq: payload.new.note_freq,
-                                creator: payload.new.creator
-                            };
-                        } else {
-                            gridData[row][col] = null;
-                        }
-                        renderGrid();
-                    }
-                }
-            )
-            .subscribe();
-    }
-    
-    function addActivityFeed(msg) {
-        activityLogs.unshift({text: msg, time: Date.now()});
-        if(activityLogs.length > 15) activityLogs.pop();
-        const feed = document.getElementById('activityFeed');
-        if(feed) feed.innerHTML = activityLogs.map(l => `<div class="feed-item">✨ ${l.text}</div>`).join('');
-    }
-    
-    // ========== 放置音符到 Supabase ==========
-    async function saveNoteToSupabase(row, col, note, creator) {
-        const id = row * COLS + col;
-        const updateData = {
-            id: id,
-            row_num: row,
-            col_num: col,
-            note_name: note ? note.name : null,
-            note_freq: note ? note.freq : null,
-            creator: creator,
-            updated_at: new Date().toISOString()
-        };
-        
-        const { error } = await supabase
-            .from('collab_grid')
-            .upsert(updateData, { onConflict: 'id' });
-        
-        if (error) {
-            console.error('儲存失敗:', error);
-            toast('放置失敗，請重試');
-            return false;
-        }
-        return true;
-    }
-    
-    // ========== 渲染網格 ==========
+    // ========== 渲染网格 ==========
     function renderGrid() {
         const container = document.getElementById('collabGrid');
         if(!container) return;
@@ -556,30 +180,132 @@
         }
     }
     
-    const namePool = ["PianoTraveller","音符旅者","MelodyMaker","HarmonyPainter","GridArtist","协作画师","SoundWeaver","NoteExplorer"];
-    function randomCreator() { return namePool[Math.floor(Math.random()*namePool.length)] + "#" + (Math.floor(Math.random()*900+100)); }
+    // ========== 从 Supabase 加载全部数据 ==========
+    async function loadGridFromSupabase() {
+        const { data, error } = await supabase
+            .from('collab_grid')
+            .select('id, row_num, col_num, note_name, note_freq, creator');
+        if (error) {
+            console.error('加载失败:', error);
+            toast('连不上数据库，请刷新重试');
+            return;
+        }
+        // 重置内存数据
+        for(let i=0; i<ROWS; i++) for(let j=0; j<COLS; j++) gridData[i][j] = null;
+        for(let item of data) {
+            const row = item.row_num;
+            const col = item.col_num;
+            if (row>=0 && row<ROWS && col>=0 && col<COLS) {
+                if (item.note_name && item.note_freq) {
+                    gridData[row][col] = { name: item.note_name, freq: item.note_freq, creator: item.creator };
+                } else {
+                    gridData[row][col] = null;
+                }
+            }
+        }
+        renderGrid();
+    }
     
-    function toast(msg) { let d=document.createElement('div'); d.className='toast-msg'; d.innerText=msg; document.body.appendChild(d); setTimeout(()=>d.remove(),2000); }
+    // ========== 保存音符到 Supabase（标准 upsert）==========
+    async function saveNoteToSupabase(row, col, note, creator) {
+        const id = row * COLS + col;
+        const payload = {
+            id: id,
+            row_num: row,
+            col_num: col,
+            note_name: note ? note.name : null,
+            note_freq: note ? note.freq : null,
+            creator: creator,
+            updated_at: new Date().toISOString()
+        };
+        const { data, error } = await supabase
+            .from('collab_grid')
+            .upsert(payload, { onConflict: 'id' })
+            .select();
+        if (error) {
+            console.error('保存失败:', error);
+            if (error.code === '42501') toast('权限不足，请检查 RLS 策略');
+            else toast(`保存失败: ${error.message}`);
+            return false;
+        }
+        console.log('保存成功:', data);
+        return true;
+    }
     
+    // ========== 实时订阅（标准写法，监听所有变更）==========
+    function subscribeToRealtime() {
+        if (realtimeChannel) {
+            supabase.removeChannel(realtimeChannel);
+        }
+        realtimeChannel = supabase
+            .channel('collab_grid_realtime')
+            .on('postgres_changes', {
+                event: '*',           // 监听 INSERT, UPDATE, DELETE
+                schema: 'public',
+                table: 'collab_grid'
+            }, (payload) => {
+                console.log('收到实时事件:', payload);
+                const { eventType, new: newRecord, old: oldRecord } = payload;
+                let row, col;
+                if (eventType === 'INSERT' || eventType === 'UPDATE') {
+                    row = newRecord?.row_num;
+                    col = newRecord?.col_num;
+                    if (row !== undefined && col !== undefined) {
+                        if (newRecord.note_name && newRecord.note_freq) {
+                            gridData[row][col] = {
+                                name: newRecord.note_name,
+                                freq: newRecord.note_freq,
+                                creator: newRecord.creator
+                            };
+                        } else {
+                            gridData[row][col] = null;
+                        }
+                        renderGrid();
+                        addActivityFeed(`🔄 格子 (${row},${col}) 已更新`);
+                    }
+                } else if (eventType === 'DELETE') {
+                    row = oldRecord?.row_num;
+                    col = oldRecord?.col_num;
+                    if (row !== undefined && col !== undefined) {
+                        gridData[row][col] = null;
+                        renderGrid();
+                        addActivityFeed(`🗑️ 格子 (${row},${col}) 已清空`);
+                    }
+                }
+            })
+            .subscribe((status, err) => {
+                if (status === 'SUBSCRIBED') {
+                    console.log('✅ Realtime 订阅成功');
+                    addActivityFeed('✅ 即時連線已建立');
+                } else if (err) {
+                    console.error('❌ Realtime 订阅失败:', err);
+                    toast('实时连接失败，请刷新页面');
+                }
+            });
+    }
+    
+    // ========== 冷却逻辑 ==========
     function canPlace() { if(isPlaying){toast(t('playingEditTip')); return false;} let now=Date.now(); if(now<cooldownUntil){ let left=Math.ceil((cooldownUntil-now)/1000); toast(t('cooldownMsg').replace('{sec}',left)); return false; } return true; }
     function applyCooldown() { cooldownUntil=Date.now()+90*1000; startCooldownTimer(); }
     function startCooldownTimer() { if(cooldownInterval) clearInterval(cooldownInterval); updateTimerDisplay(); cooldownInterval=setInterval(()=>{ let remain=(cooldownUntil-Date.now())/1000; if(remain<=0){ clearInterval(cooldownInterval); cooldownInterval=null; updateTimerDisplay(); } else updateTimerDisplay(); }, 1000); }
     function updateTimerDisplay() { let box=document.getElementById('timerBox'); let remain=(cooldownUntil-Date.now())/1000; if(remain<=0){ box.className="timer-box free"; box.innerHTML=t('statusFree'); } else{ box.className="timer-box cooling"; let m=Math.floor(remain/60),s=Math.floor(remain%60); box.innerHTML=`⏳ ${t('statusCool')} ${m}:${s<10?'0'+s:s}`; } }
     
-    async function onPlaceNote(row,col) {
+    const namePool = ["PianoTraveller","音符旅者","MelodyMaker","HarmonyPainter","GridArtist","协作画师","SoundWeaver","NoteExplorer"];
+    function randomCreator() { return namePool[Math.floor(Math.random()*namePool.length)] + "#" + (Math.floor(Math.random()*900+100)); }
+    
+    // ========== 放置音符（写入数据库，实时事件会自动更新界面）==========
+    async function onPlaceNote(row, col) {
         if(!canPlace()) return;
-        if(isPlaying){toast(t('playingEditTip')); return;}
-        
+        if(isPlaying){ toast(t('playingEditTip')); return; }
         const creator = randomCreator();
         const newNoteObj = isRestMode ? null : { name: currentPitch.name, freq: currentPitch.freq };
-        
         const success = await saveNoteToSupabase(row, col, newNoteObj, creator);
         if(success) {
             applyCooldown();
             const noteDisplay = newNoteObj ? newNoteObj.name : '休止符';
             const msg = newNoteObj ? t('placeNote').replace('{user}',creator).replace('{x}',row).replace('{y}',col).replace('{note}',noteDisplay) : t('placeRest').replace('{user}',creator).replace('{x}',row).replace('{y}',col);
             addActivityFeed(msg);
-            
+            // 播放提示音
             if(newNoteObj && audioCtx){
                 let ctx=audioCtx;
                 let osc=ctx.createOscillator(),gain=ctx.createGain();
@@ -594,11 +320,11 @@
         }
     }
     
-    // ========== 鋼琴鍵盤 ==========
+    // ========== 钢琴键盘 ==========
     const notesList = (()=>{ let r=[]; for(let oct=3;oct<=6;oct++) for(let n of ['C','C#','D','D#','E','F','F#','G','G#','A','A#','B']) r.push({ name:n+oct, freq:440*Math.pow(2,((oct-4)*12+['C','C#','D','D#','E','F','F#','G','G#','A','A#','B'].indexOf(n)-9)/12), isSharp:n.includes('#') }); return r; })();
     function buildPiano() { let container=document.getElementById('pianoKeyboard'); container.innerHTML=''; notesList.forEach(note=>{ let key=document.createElement('div'); key.className=`key ${note.isSharp?'black-key':'white-key'} ${currentPitch.name===note.name?'selected':''}`; let label=document.createElement('div'); label.className='key-label'; label.textContent=note.name; key.appendChild(label); key.onclick=(e)=>{ e.stopPropagation(); currentPitch={name:note.name,freq:note.freq}; document.querySelectorAll('#pianoKeyboard .key').forEach(k=>k.classList.remove('selected')); key.classList.add('selected'); toast(`🎼 ${currentPitch.name}`); if(isRestMode) document.getElementById('noteModeBtn').click(); }; container.appendChild(key); }); }
     
-    // ========== 播放功能 ==========
+    // ========== 播放逻辑 ==========
     function initAudio() { if(!audioCtx) audioCtx=new (window.AudioContext||window.webkitAudioContext)(); return audioCtx; }
     function playGrid() { 
         let hasAny = false;
@@ -620,7 +346,7 @@
     function initProgressDrag(){ let wrap=document.getElementById('progressWrap'); let update=(e)=>{ let rect=wrap.getBoundingClientRect(); let x=e.touches?e.touches[0].clientX:e.clientX; let percent=Math.min(1,Math.max(0,(x-rect.left)/rect.width)); let total=ROWS*COLS; let target=Math.floor(percent*total); if(target>=total) target=total-1; seekTarget=target; document.getElementById('progressBar').style.width=(percent*100)+'%'; document.getElementById('progressThumb').style.left=(percent*100)+'%'; if(isPlaying){ if(playTimeout)clearTimeout(playTimeout); playCellByIndex(seekTarget); } }; wrap.addEventListener('mousedown',(e)=>{e.preventDefault();update(e);let move=(m)=>{m.preventDefault();update(m);}; let up=()=>{document.removeEventListener('mousemove',move);document.removeEventListener('mouseup',up);}; document.addEventListener('mousemove',move);document.addEventListener('mouseup',up);}); wrap.addEventListener('touchstart',(e)=>{e.preventDefault();update(e);let move=(m)=>{m.preventDefault();update(m);}; let end=()=>{document.removeEventListener('touchmove',move);document.removeEventListener('touchend',end);}; document.addEventListener('touchmove',move);document.addEventListener('touchend',end);}); }
     function exportScore(){ let txt="🎵 全球協作樂譜 (20x10)\n"; for(let r=0;r<ROWS;r++){ for(let c=0;c<COLS;c++){ let cell=gridData[r][c]; txt+=(cell?cell.name:"⏸")+"\t"; } txt+="\n"; } let blob=new Blob([txt],{type:'text/plain'}); let a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download=`collab_score_${Date.now()}.txt`; a.click(); }
     
-    // ========== 初始化 ==========
+    // ========== 页面初始化 ==========
     document.addEventListener('DOMContentLoaded', async () => {
         buildLangSwitcher();
         buildPiano();
@@ -628,8 +354,7 @@
         updateUI();
         
         await loadGridFromSupabase();
-        subscribeToRealtime();
-        
+        subscribeToRealtime();   // 建立实时订阅
         startCooldownTimer();
         
         document.getElementById('playBtn').onclick=playGrid;
