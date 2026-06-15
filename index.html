@@ -15,17 +15,17 @@
         .lang-btn.active { background: #7d8c9e; color: white; }
         h1 { text-align: center; font-size: 1.8rem; font-weight: 500; color: #2c3e4e; margin-bottom: 6px; }
         .tip { text-align: center; font-size: 12px; color: #7f8c8d; margin-bottom: 18px; }
-        .piano-container { background: #f0f2f5; border-radius: 28px; padding: 16px 12px; margin: 20px 0; overflow-x: auto; }
+        .piano-container { background: #f0f2f5; border-radius: 28px; padding: 16px 12px; margin: 20px 0; overflow-x: auto; box-shadow: inset 0 1px 3px #0001, 0 2px 6px #e2e6ea; }
         .piano { display: flex; min-width: max-content; }
         .key { cursor: pointer; transition: 0.05s linear; position: relative; }
-        .white-key { width: 44px; height: 150px; background: white; border: 1px solid #cdd3d9; border-radius: 0 0 12px 12px; }
+        .white-key { width: 44px; height: 150px; background: white; border: 1px solid #cdd3d9; border-radius: 0 0 12px 12px; box-shadow: 0 1px 2px rgba(0,0,0,0.05); }
         .black-key { width: 28px; height: 96px; background: #424242; margin-left: -14px; margin-right: -14px; z-index: 2; border-radius: 0 0 10px 10px; border-bottom: 2px solid #c0a46a; }
         .key.selected { background: #e6eef7; transform: scale(0.97); }
         .white-key.selected { background: #d5e0eb; }
         .black-key.selected { background: #5e5a4c; border-bottom-color: #f3d48f; }
         .key-label { position: absolute; bottom: 8px; left: 0; right: 0; text-align: center; font-size: 9px; font-weight: 600; color: #7c7f82; }
         .black-key .key-label { color: #efdfb7; }
-        .collab-canvas { background: #ffffff; border-radius: 28px; padding: 16px; margin: 20px 0; border: 1px solid #eef2f6; }
+        .collab-canvas { background: #ffffff; border-radius: 28px; padding: 16px; margin: 20px 0; border: 1px solid #eef2f6; box-shadow: 0 4px 12px rgba(0,0,0,0.02); }
         .canvas-header { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; margin-bottom: 18px; gap: 12px; }
         .online-badge { background: #eef3fa; padding: 5px 18px; border-radius: 60px; font-size: 12px; color: #345; }
         .activity-feed { background: #f8fafd; border-radius: 24px; padding: 8px 14px; max-height: 90px; overflow-y: auto; font-size: 11px; color: #506578; width: 280px; border: 1px solid #e9edf2; font-family: monospace; }
@@ -55,34 +55,42 @@
         .stop-btn { background: #bc7a5e; }
         .export-btn { background: #54809b; }
         .toast-msg { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); background: #2f4156; color: #fef5e0; padding: 8px 20px; border-radius: 60px; font-size: 12px; z-index: 1100; }
-        @media (max-width: 680px) { .white-key { width: 34px; height: 130px; } .black-key { width: 24px; margin-left: -12px; margin-right: -12px; } .grid-container { grid-template-columns: repeat(20, minmax(32px, 40px)); } }
+        .scroll-hint { text-align: center; font-size: 11px; color: #888; margin-top: 4px; }
+        @media (max-width: 680px) {
+            .white-key { width: 34px; height: 130px; }
+            .black-key { width: 24px; margin-left: -12px; margin-right: -12px; }
+            .grid-container { grid-template-columns: repeat(20, minmax(32px, 40px)); }
+        }
     </style>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
 <div class="container">
-    <div class="demo-banner">
+    <div class="demo-banner" data-i18n="demoBanner">
         🌍 全球即時協作畫板 | 點擊琴鍵選音 → 放置音符 | 人人平等・冷卻90秒
         <span class="realtime-badge">⚡ 即時同步已啟用</span>
     </div>
     <div class="lang-box" id="langButtons"></div>
-    <h1>🎵 音符共同體 · 全球即時協作</h1>
-    <p class="tip">🎹 點擊鋼琴鍵選擇音高 → 點擊方格放置音符｜所有人即時同步</p>
+    <h1 data-i18n="title">🎵 音符共同體 · 全球即時協作</h1>
+    <p class="tip" data-i18n="rule">🎹 點擊鋼琴鍵選擇音高 → 點擊方格放置音符｜所有人即時同步</p>
 
-    <div class="piano-container"><div class="piano" id="pianoKeyboard"></div><div class="scroll-hint">← 左右滑動 →</div></div>
+    <div class="piano-container">
+        <div class="piano" id="pianoKeyboard"></div>
+        <div class="scroll-hint" data-i18n="scrollHint">← 左右滑動 →</div>
+    </div>
 
     <div class="action-buttons">
-        <button id="noteModeBtn" class="action-btn active">🎵 音符模式</button>
-        <button id="restActionBtn" class="action-btn">⏸️ 休止符模式</button>
+        <button id="noteModeBtn" class="action-btn active" data-i18n="noteMode">🎵 音符模式</button>
+        <button id="restActionBtn" class="action-btn" data-i18n="restAction">⏸️ 休止符模式</button>
     </div>
 
     <div class="rhythm-select" id="rhythmGroup">
-        <button class="rhythm-btn" data-speed="0.8">🐢 舒緩</button>
-        <button class="rhythm-btn active" data-speed="0.5">✨ 適中</button>
-        <button class="rhythm-btn" data-speed="0.25">⚡ 輕快</button>
+        <button class="rhythm-btn" data-speed="0.8" data-i18n="slow">🐢 舒緩</button>
+        <button class="rhythm-btn active" data-speed="0.5" data-i18n="medium">✨ 適中</button>
+        <button class="rhythm-btn" data-speed="0.25" data-i18n="fast">⚡ 輕快</button>
     </div>
 
-    <div id="timerBox" class="timer-box free">✅ 可放置</div>
+    <div id="timerBox" class="timer-box free" data-i18n="statusFree">✅ 可放置</div>
 
     <div class="collab-canvas">
         <div class="canvas-header">
@@ -92,23 +100,214 @@
         <div class="grid-container" id="collabGrid"></div>
     </div>
 
-    <div class="progress-wrap" id="progressWrap"><div class="progress-bar" id="progressBar"></div><div class="progress-thumb" id="progressThumb"></div></div>
+    <div class="progress-wrap" id="progressWrap">
+        <div class="progress-bar" id="progressBar"></div>
+        <div class="progress-thumb" id="progressThumb"></div>
+    </div>
 
     <div class="btn-group">
-        <button class="btn play-btn" id="playBtn">▶ 播放全譜</button>
-        <button class="btn pause-btn" id="pauseBtn" disabled>⏸ 暫停</button>
-        <button class="btn stop-btn" id="stopBtn">⏹ 停止</button>
-        <button class="btn export-btn" id="exportBtn">📎 導出樂譜</button>
+        <button class="btn play-btn" id="playBtn" data-i18n="play">▶ 播放全譜</button>
+        <button class="btn pause-btn" id="pauseBtn" disabled data-i18n="pause">⏸ 暫停</button>
+        <button class="btn stop-btn" id="stopBtn" data-i18n="stop">⏹ 停止</button>
+        <button class="btn export-btn" id="exportBtn" data-i18n="export">📎 導出樂譜</button>
     </div>
 </div>
 
 <script>
-    // ========== Supabase 配置（请勿修改，已为您填好）==========
+    // ========== Supabase 云端数据库配置 ==========
     const SUPABASE_URL = 'https://nlajqcuxmtkegxmuotwb.supabase.co';
     const SUPABASE_ANON_KEY = 'sb_publishable_gurFjlfB6aBYsOok1OQDew_zJkoYTHn';
     const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-    
-    // ========== 全局变量 ==========
+
+    // ========== 8国完整多语言包 ==========
+    const languages = {
+        zh: {
+            name:"简体",
+            demoBanner:"🌍 全球协作画板 | 点击琴键选音 → 放置音符 | 人人平等・冷却90秒",
+            title:"🎵 音符共同体 · 全球实时协作",
+            rule:"🎹 点击钢琴键选择音高 → 点击方格放置音符｜所有人实时同步",
+            scrollHint:"← 左右滑动 →",
+            noteMode:"🎵 音符模式",
+            restAction:"⏸️ 休止符模式",
+            slow:"🐢 舒缓",
+            medium:"✨ 适中",
+            fast:"⚡ 轻快",
+            statusFree:"✅ 可放置",
+            statusCool:"⏳ 冷却中",
+            play:"▶ 播放全谱",
+            pause:"⏸ 暂停",
+            stop:"⏹ 停止",
+            export:"📎 导出乐谱",
+            playingEditTip:"播放中请先停止",
+            noMusic:"暂无音符",
+            placeNote:"🎵 {user} 在 ({x},{y}) 放置了 {note}",
+            placeRest:"⏸️ {user} 清空了 ({x},{y})",
+            cooldownMsg:"冷却中 剩余 {sec}秒"
+        },
+        zh_TW: {
+            name:"繁體",
+            demoBanner:"🌍 全球協作畫板 | 點擊琴鍵選音 → 放置音符 | 人人平等・冷卻90秒",
+            title:"🎵 音符共同體 · 全球即時協作",
+            rule:"🎹 點擊鋼琴鍵選擇音高 → 點擊方格放置音符｜所有人即時同步",
+            scrollHint:"← 左右滑動 →",
+            noteMode:"🎵 音符模式",
+            restAction:"⏸️ 休止符模式",
+            slow:"🐢 舒緩",
+            medium:"✨ 適中",
+            fast:"⚡ 輕快",
+            statusFree:"✅ 可放置",
+            statusCool:"⏳ 冷卻中",
+            play:"▶ 播放全譜",
+            pause:"⏸ 暫停",
+            stop:"⏹ 停止",
+            export:"📎 導出樂譜",
+            playingEditTip:"播放中請先停止",
+            noMusic:"暫無音符",
+            placeNote:"🎵 {user} 在 ({x},{y}) 放置了 {note}",
+            placeRest:"⏸️ {user} 清空了 ({x},{y})",
+            cooldownMsg:"冷卻中 剩餘 {sec}秒"
+        },
+        en: {
+            name:"English",
+            demoBanner:"🌍 Global Collab Board | Click key → Place note | 90s cooldown for all",
+            title:"🎵 Note Commons · Global Realtime Collab",
+            rule:"🎹 Click piano key to pick pitch → Click cell to place note",
+            scrollHint:"← swipe →",
+            noteMode:"🎵 Note mode",
+            restAction:"⏸️ Rest mode",
+            slow:"🐢 Slow",
+            medium:"✨ Medium",
+            fast:"⚡ Fast",
+            statusFree:"✅ Ready",
+            statusCool:"⏳ Cooldown",
+            play:"▶ Play",
+            pause:"⏸ Pause",
+            stop:"⏹ Stop",
+            export:"📎 Export",
+            playingEditTip:"Stop playback first",
+            noMusic:"No notes",
+            placeNote:"🎵 {user} placed {note} at ({x},{y})",
+            placeRest:"⏸️ {user} cleared ({x},{y})",
+            cooldownMsg:"Cooldown {sec}s left"
+        },
+        ja: {
+            name:"日本語",
+            demoBanner:"🌍 共同キャンバス | 鍵盤クリック→音符配置 | 全員クールダウン90秒",
+            title:"🎵 音符コモンズ · リアルタイム共同制作",
+            rule:"🎹 鍵盤で音程選択 → セルをクリックで音符配置",
+            scrollHint:"← スライド →",
+            noteMode:"🎵 音符モード",
+            restAction:"⏸️ 休符モード",
+            slow:"🐢 ゆっくり",
+            medium:"✨ 普通",
+            fast:"⚡ 速い",
+            statusFree:"✅ 配置可能",
+            statusCool:"⏳ クールダウン",
+            play:"▶ 再生",
+            pause:"⏸ 一時停止",
+            stop:"⏹ 停止",
+            export:"📎 エクスポート",
+            playingEditTip:"再生中は編集不可",
+            noMusic:"音符がありません",
+            placeNote:"🎵 {user} が ({x},{y}) に {note} を配置",
+            placeRest:"⏸️ {user} が ({x},{y}) をクリア",
+            cooldownMsg:"クールダウン残り{sec}秒"
+        },
+        ko: {
+            name:"한국어",
+            demoBanner:"🌍 글로벌 협업 캔버스 | 모두 90초 쿨다운",
+            title:"🎵 음표 협업 캔버스 · 실시간 동기화",
+            rule:"🎹 건반 클릭 → 음표 배치 (실시간 동기화)",
+            scrollHint:"← 좌우 스크롤 →",
+            noteMode:"🎵 음표 모드",
+            restAction:"⏸️ 쉼표 모드",
+            slow:"🐢 느리게",
+            medium:"✨ 중간",
+            fast:"⚡ 빠르게",
+            statusFree:"✅ 가능",
+            statusCool:"⏳ 쿨다운",
+            play:"▶ 재생",
+            pause:"⏸ 일시정지",
+            stop:"⏹ 정지",
+            export:"📎 내보내기",
+            playingEditTip:"재생 중 편집 불가",
+            noMusic:"음표 없음",
+            placeNote:"🎵 {user} 님이 ({x},{y})에 {note} 추가",
+            placeRest:"⏸️ {user} 님이 ({x},{y}) 비움",
+            cooldownMsg:"쿨다운 {sec}초"
+        },
+        fr: {
+            name:"Français",
+            demoBanner:"🌍 Toile collaborative | 90s de recharge",
+            title:"🎵 Partition collaborative en temps réel",
+            rule:"🎹 Cliquez touche → Posez note (sync temps réel)",
+            scrollHint:"← glisser →",
+            noteMode:"🎵 Mode note",
+            restAction:"⏸️ Mode silence",
+            slow:"🐢 Lent",
+            medium:"✨ Moyen",
+            fast:"⚡ Rapide",
+            statusFree:"✅ Prêt",
+            statusCool:"⏳ Recharge",
+            play:"▶ Lire",
+            pause:"⏸ Pause",
+            stop:"⏹ Arrêter",
+            export:"📎 Exporter",
+            playingEditTip:"Arrêtez la lecture",
+            noMusic:"Aucune note",
+            placeNote:"🎵 {user} a placé {note} en ({x},{y})",
+            placeRest:"⏸️ {user} a effacé ({x},{y})",
+            cooldownMsg:"Attente {sec}s"
+        },
+        de: {
+            name:"Deutsch",
+            demoBanner:"🌍 Kollaborative Leinwand | 90s Abklingzeit",
+            title:"🎵 Gemeinsame Partitur · Echtzeit",
+            rule:"🎹 Klicke Taste → Note setzen (Echtzeit-Sync)",
+            scrollHint:"← wischen →",
+            noteMode:"🎵 Notenmodus",
+            restAction:"⏸️ Pausenmodus",
+            slow:"🐢 Langsam",
+            medium:"✨ Mittel",
+            fast:"⚡ Schnell",
+            statusFree:"✅ Bereit",
+            statusCool:"⏳ Abklingzeit",
+            play:"▶ Abspielen",
+            pause:"⏸ Pause",
+            stop:"⏹ Stopp",
+            export:"📎 Exportieren",
+            playingEditTip:"Wiedergabe stoppen",
+            noMusic:"Keine Noten",
+            placeNote:"🎵 {user} setzte {note} bei ({x},{y})",
+            placeRest:"⏸️ {user} löschte ({x},{y})",
+            cooldownMsg:"Abklingzeit {sec}s"
+        },
+        es: {
+            name:"Español",
+            demoBanner:"🌍 Lienzo colaborativo | 90s de enfriamiento",
+            title:"🎵 Partitura colaborativa · Tiempo real",
+            rule:"🎹 Haz clic en tecla → Coloca nota (sincronización real)",
+            scrollHint:"← deslizar →",
+            noteMode:"🎵 Modo nota",
+            restAction:"⏸️ Modo silencio",
+            slow:"🐢 Lento",
+            medium:"✨ Medio",
+            fast:"⚡ Rápido",
+            statusFree:"✅ Listo",
+            statusCool:"⏳ Enfriamiento",
+            play:"▶ Reproducir",
+            pause:"⏸ Pausa",
+            stop:"⏹ Parar",
+            export:"📎 Exportar",
+            playingEditTip:"Detén la reproducción",
+            noMusic:"Sin notas",
+            placeNote:"🎵 {user} colocó {note} en ({x},{y})",
+            placeRest:"⏸️ {user} limpió ({x},{y})",
+            cooldownMsg:"Enfriamiento {sec}s"
+        }
+    };
+
+    // ========== 全局基础变量 ==========
     const COLS = 20, ROWS = 10;
     let gridData = new Array(ROWS).fill().map(() => new Array(COLS).fill(null));
     let currentPitch = { name: "C4", freq: 261.63 };
@@ -120,67 +319,83 @@
     let isPlaying = false, playTimeout = null, audioCtx = null, seekTarget = -1;
     let currentLang = 'zh_TW';
     let realtimeChannel = null;
-    
-    // ========== 多语言 ==========
-    const languages = {
-        zh: { name:"简体", noteMode:"🎵 音符模式", restAction:"⏸️ 休止符模式", slow:"🐢 舒缓", medium:"✨ 适中", fast:"⚡ 轻快", statusFree:"✅ 可放置", statusCool:"⏳ 冷却中", play:"▶ 播放全谱", pause:"⏸ 暂停", stop:"⏹ 停止", export:"📎 导出乐谱", playingEditTip:"播放中请先停止", noMusic:"暂无音符", placeNote:"🎵 {user} 在 ({x},{y}) 放置了 {note}", placeRest:"⏸️ {user} 清空了 ({x},{y})", cooldownMsg:"冷却中 剩余 {sec}秒" },
-        zh_TW: { name:"繁體", noteMode:"🎵 音符模式", restAction:"⏸️ 休止符模式", slow:"🐢 舒緩", medium:"✨ 適中", fast:"⚡ 輕快", statusFree:"✅ 可放置", statusCool:"⏳ 冷卻中", play:"▶ 播放全譜", pause:"⏸ 暫停", stop:"⏹ 停止", export:"📎 導出樂譜", playingEditTip:"播放中請先停止", noMusic:"暫無音符", placeNote:"🎵 {user} 在 ({x},{y}) 放置了 {note}", placeRest:"⏸️ {user} 清空了 ({x},{y})", cooldownMsg:"冷卻中 剩餘 {sec}秒" }
-    };
-    function t(key) { return languages[currentLang]?.[key] || languages.zh_TW?.[key] || key; }
+
+    // ========== 多语言工具函数 ==========
+    function t(key) {
+        return languages[currentLang]?.[key] || languages.zh_TW?.[key] || key;
+    }
+
     function updateUI() {
-        document.getElementById('noteModeBtn').innerText = t('noteMode');
-        document.getElementById('restActionBtn').innerText = t('restAction');
-        document.querySelectorAll('.rhythm-btn')[0].innerText = t('slow');
-        document.querySelectorAll('.rhythm-btn')[1].innerText = t('medium');
-        document.querySelectorAll('.rhythm-btn')[2].innerText = t('fast');
-        document.getElementById('playBtn').innerText = t('play');
-        document.getElementById('pauseBtn').innerText = t('pause');
-        document.getElementById('stopBtn').innerText = t('stop');
-        document.getElementById('exportBtn').innerText = t('export');
+        document.querySelectorAll('[data-i18n]').forEach(el => {
+            const k = el.getAttribute('data-i18n');
+            if (t(k)) el.innerText = t(k);
+        });
         updateTimerDisplay();
     }
+
     function buildLangSwitcher() {
         const container = document.getElementById('langButtons');
         container.innerHTML = '';
-        for(let [code, data] of Object.entries(languages)) {
+        for (let [code, data] of Object.entries(languages)) {
             let btn = document.createElement('button');
-            btn.className = `lang-btn ${code===currentLang?'active':''}`;
+            btn.className = `lang-btn ${code === currentLang ? 'active' : ''}`;
             btn.innerText = data.name;
             btn.onclick = () => {
                 currentLang = code;
-                document.querySelectorAll('.lang-btn').forEach(b=>b.classList.remove('active'));
+                document.querySelectorAll('.lang-btn').forEach(b => b.classList.remove('active'));
                 btn.classList.add('active');
                 updateUI();
+                renderActivityFeed();
             };
             container.appendChild(btn);
         }
     }
-    
-    // ========== 辅助函数 ==========
-    function toast(msg) { let d=document.createElement('div'); d.className='toast-msg'; d.innerText=msg; document.body.appendChild(d); setTimeout(()=>d.remove(),2000); }
-    function addActivityFeed(msg) { activityLogs.unshift({text: msg, time: Date.now()}); if(activityLogs.length > 15) activityLogs.pop(); const feed = document.getElementById('activityFeed'); if(feed) feed.innerHTML = activityLogs.map(l => `<div class="feed-item">✨ ${l.text}</div>`).join(''); }
-    
-    // ========== 渲染网格 ==========
+
+    // ========== 通用辅助方法 ==========
+    function toast(msg) {
+        let d = document.createElement('div');
+        d.className = 'toast-msg';
+        d.innerText = msg;
+        document.body.appendChild(d);
+        setTimeout(() => d.remove(), 2000);
+    }
+
+    function addActivityFeed(msg) {
+        activityLogs.unshift({ text: msg, time: Date.now() });
+        if (activityLogs.length > 20) activityLogs.pop();
+        const feed = document.getElementById('activityFeed');
+        if (feed) feed.innerHTML = activityLogs.map(l => `<div class="feed-item">✨ ${l.text}</div>`).join('');
+    }
+
+    function renderActivityFeed() {
+        const feed = document.getElementById('activityFeed');
+        if (feed) {
+            feed.innerHTML = activityLogs.map(l => `<div class="feed-item">✨ ${l.text}</div>`).join('')
+                || `<div class="feed-item">✨ ${t('demoBanner')}</div>`;
+        }
+    }
+
+    // ========== 网格渲染 & 数据加载 ==========
     function renderGrid() {
         const container = document.getElementById('collabGrid');
-        if(!container) return;
+        if (!container) return;
         container.innerHTML = '';
-        for(let r=0; r<ROWS; r++) {
-            for(let c=0; c<COLS; c++) {
+        for (let r = 0; r < ROWS; r++) {
+            for (let c = 0; c < COLS; c++) {
                 const cell = gridData[r][c];
                 const hasNote = cell !== null;
                 const noteName = hasNote ? cell.name : '⏸';
-                const creatorName = hasNote ? (cell.creator || '匿名').slice(0,6) : '';
+                const creatorName = hasNote ? (cell.creator || '匿名').slice(0, 6) : '';
                 const div = document.createElement('div');
                 div.className = `pixel-note ${hasNote ? 'has-note' : 'rest'}`;
                 div.innerHTML = `<div class="note-symbol">${hasNote ? noteName.split('#')[0] : '⏸'}</div><div class="creator-tag">${creatorName || '⚡'}</div>`;
-                div.onclick = (function(row,col){ return () => onPlaceNote(row,col); })(r,c);
+                div.onclick = ((row, col) => () => onPlaceNote(row, col))(r, c);
                 container.appendChild(div);
             }
         }
     }
-    
-    // ========== 从 Supabase 加载全部数据 ==========
+
+    // 从 Supabase 加载整张乐谱
     async function loadGridFromSupabase() {
         const { data, error } = await supabase
             .from('collab_grid')
@@ -190,22 +405,23 @@
             toast('连不上数据库，请刷新重试');
             return;
         }
-        for(let i=0; i<ROWS; i++) for(let j=0; j<COLS; j++) gridData[i][j] = null;
-        for(let item of data) {
+        for (let i = 0; i < ROWS; i++)
+            for (let j = 0; j < COLS; j++)
+                gridData[i][j] = null;
+
+        for (let item of data) {
             const row = item.row_num;
             const col = item.col_num;
-            if (row>=0 && row<ROWS && col>=0 && col<COLS) {
-                if (item.note_name && item.note_freq) {
-                    gridData[row][col] = { name: item.note_name, freq: item.note_freq, creator: item.creator };
-                } else {
-                    gridData[row][col] = null;
-                }
+            if (row >= 0 && row < ROWS && col >= 0 && col < COLS) {
+                gridData[row][col] = item.note_name && item.note_freq
+                    ? { name: item.note_name, freq: item.note_freq, creator: item.creator }
+                    : null;
             }
         }
         renderGrid();
     }
-    
-    // ========== 保存音符到 Supabase ==========
+
+    // 保存单格数据到 Supabase
     async function saveNoteToSupabase(row, col, note, creator) {
         const id = row * COLS + col;
         const payload = {
@@ -227,12 +443,10 @@
         }
         return true;
     }
-    
-    // ========== 实时订阅（标准写法，监听所有变更）==========
+
+    // ========== Supabase 实时订阅 ==========
     function subscribeToRealtime() {
-        if (realtimeChannel) {
-            supabase.removeChannel(realtimeChannel);
-        }
+        if (realtimeChannel) supabase.removeChannel(realtimeChannel);
         realtimeChannel = supabase
             .channel('collab_grid_realtime')
             .on('postgres_changes', {
@@ -240,22 +454,15 @@
                 schema: 'public',
                 table: 'collab_grid'
             }, (payload) => {
-                console.log('收到实时事件:', payload);
                 const { eventType, new: newRecord, old: oldRecord } = payload;
                 let row, col;
                 if (eventType === 'INSERT' || eventType === 'UPDATE') {
                     row = newRecord?.row_num;
                     col = newRecord?.col_num;
                     if (row !== undefined && col !== undefined) {
-                        if (newRecord.note_name && newRecord.note_freq) {
-                            gridData[row][col] = {
-                                name: newRecord.note_name,
-                                freq: newRecord.note_freq,
-                                creator: newRecord.creator
-                            };
-                        } else {
-                            gridData[row][col] = null;
-                        }
+                        gridData[row][col] = newRecord.note_name && newRecord.note_freq
+                            ? { name: newRecord.note_name, freq: newRecord.note_freq, creator: newRecord.creator }
+                            : null;
                         renderGrid();
                         addActivityFeed(`🔄 格子 (${row},${col}) 已更新`);
                     }
@@ -279,87 +486,347 @@
                 }
             });
     }
-    
-    // ========== 冷却逻辑 ==========
-    function canPlace() { if(isPlaying){toast(t('playingEditTip')); return false;} let now=Date.now(); if(now<cooldownUntil){ let left=Math.ceil((cooldownUntil-now)/1000); toast(t('cooldownMsg').replace('{sec}',left)); return false; } return true; }
-    function applyCooldown() { cooldownUntil=Date.now()+90*1000; startCooldownTimer(); }
-    function startCooldownTimer() { if(cooldownInterval) clearInterval(cooldownInterval); updateTimerDisplay(); cooldownInterval=setInterval(()=>{ let remain=(cooldownUntil-Date.now())/1000; if(remain<=0){ clearInterval(cooldownInterval); cooldownInterval=null; updateTimerDisplay(); } else updateTimerDisplay(); }, 1000); }
-    function updateTimerDisplay() { let box=document.getElementById('timerBox'); let remain=(cooldownUntil-Date.now())/1000; if(remain<=0){ box.className="timer-box free"; box.innerHTML=t('statusFree'); } else{ box.className="timer-box cooling"; let m=Math.floor(remain/60),s=Math.floor(remain%60); box.innerHTML=`⏳ ${t('statusCool')} ${m}:${s<10?'0'+s:s}`; } }
-    
-    const namePool = ["PianoTraveller","音符旅者","MelodyMaker","HarmonyPainter","GridArtist","协作画师","SoundWeaver","NoteExplorer"];
-    function randomCreator() { return namePool[Math.floor(Math.random()*namePool.length)] + "#" + (Math.floor(Math.random()*900+100)); }
-    
-    // ========== 放置音符 ==========
+
+    // ========== 冷却倒计时逻辑 ==========
+    function canPlace() {
+        if (isPlaying) {
+            toast(t('playingEditTip'));
+            return false;
+        }
+        let now = Date.now();
+        if (now < cooldownUntil) {
+            let left = Math.ceil((cooldownUntil - now) / 1000);
+            toast(t('cooldownMsg').replace('{sec}', left));
+            return false;
+        }
+        return true;
+    }
+
+    function applyCooldown() {
+        cooldownUntil = Date.now() + 90 * 1000;
+        startCooldownTimer();
+    }
+
+    function startCooldownTimer() {
+        if (cooldownInterval) clearInterval(cooldownInterval);
+        updateTimerDisplay();
+        cooldownInterval = setInterval(() => {
+            let remain = (cooldownUntil - Date.now()) / 1000;
+            if (remain <= 0) {
+                clearInterval(cooldownInterval);
+                cooldownInterval = null;
+            }
+            updateTimerDisplay();
+        }, 1000);
+    }
+
+    function updateTimerDisplay() {
+        let box = document.getElementById('timerBox');
+        let remain = (cooldownUntil - Date.now()) / 1000;
+        if (remain <= 0) {
+            box.className = "timer-box free";
+            box.innerHTML = t('statusFree');
+        } else {
+            box.className = "timer-box cooling";
+            let m = Math.floor(remain / 60), s = Math.floor(remain % 60);
+            box.innerHTML = `⏳ ${t('statusCool')} ${m}:${s < 10 ? '0' + s : s}`;
+        }
+    }
+
+    // 随机用户名
+    const namePool = ["PianoTraveller", "音符旅者", "MelodyMaker", "HarmonyPainter",
+        "GridArtist", "协作画师", "SoundWeaver", "NoteExplorer", "CanvasWalker"];
+    function randomCreator() {
+        return namePool[Math.floor(Math.random() * namePool.length)] + "#" + (Math.floor(Math.random() * 900 + 100));
+    }
+
+    // ========== 放置音符/休止符主逻辑 ==========
     async function onPlaceNote(row, col) {
-        if(!canPlace()) return;
-        if(isPlaying){ toast(t('playingEditTip')); return; }
+        if (!canPlace()) return;
+        if (isPlaying) {
+            toast(t('playingEditTip'));
+            return;
+        }
         const creator = randomCreator();
         const newNoteObj = isRestMode ? null : { name: currentPitch.name, freq: currentPitch.freq };
         const success = await saveNoteToSupabase(row, col, newNoteObj, creator);
-        if(success) {
+
+        if (success) {
             applyCooldown();
             const noteDisplay = newNoteObj ? newNoteObj.name : '休止符';
-            const msg = newNoteObj ? t('placeNote').replace('{user}',creator).replace('{x}',row).replace('{y}',col).replace('{note}',noteDisplay) : t('placeRest').replace('{user}',creator).replace('{x}',row).replace('{y}',col);
+            const msg = newNoteObj
+                ? t('placeNote').replace('{user}', creator).replace('{x}', row).replace('{y}', col).replace('{note}', noteDisplay)
+                : t('placeRest').replace('{user}', creator).replace('{x}', row).replace('{y}', col);
             addActivityFeed(msg);
-            if(newNoteObj && audioCtx){
-                let ctx=audioCtx;
-                let osc=ctx.createOscillator(),gain=ctx.createGain();
-                osc.connect(gain); gain.connect(ctx.destination);
-                osc.frequency.value=newNoteObj.freq;
-                gain.gain.value=0.15;
+
+            // 本地播放预览音
+            if (newNoteObj && audioCtx) {
+                let ctx = audioCtx;
+                let osc = ctx.createOscillator(), gain = ctx.createGain();
+                osc.connect(gain);
+                gain.connect(ctx.destination);
+                osc.frequency.value = newNoteObj.freq;
+                gain.gain.value = 0.15;
                 osc.start();
-                gain.gain.exponentialRampToValueAtTime(0.0001,ctx.currentTime+0.4);
-                osc.stop(ctx.currentTime+0.4);
-                if(ctx.state==='suspended') ctx.resume();
+                gain.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + 0.4);
+                osc.stop(ctx.currentTime + 0.4);
+                if (ctx.state === 'suspended') ctx.resume();
             }
         }
     }
-    
-    // ========== 钢琴键盘 ==========
-    const notesList = (()=>{ let r=[]; for(let oct=3;oct<=6;oct++) for(let n of ['C','C#','D','D#','E','F','F#','G','G#','A','A#','B']) r.push({ name:n+oct, freq:440*Math.pow(2,((oct-4)*12+['C','C#','D','D#','E','F','F#','G','G#','A','A#','B'].indexOf(n)-9)/12), isSharp:n.includes('#') }); return r; })();
-    function buildPiano() { let container=document.getElementById('pianoKeyboard'); container.innerHTML=''; notesList.forEach(note=>{ let key=document.createElement('div'); key.className=`key ${note.isSharp?'black-key':'white-key'} ${currentPitch.name===note.name?'selected':''}`; let label=document.createElement('div'); label.className='key-label'; label.textContent=note.name; key.appendChild(label); key.onclick=(e)=>{ e.stopPropagation(); currentPitch={name:note.name,freq:note.freq}; document.querySelectorAll('#pianoKeyboard .key').forEach(k=>k.classList.remove('selected')); key.classList.add('selected'); toast(`🎼 ${currentPitch.name}`); if(isRestMode) document.getElementById('noteModeBtn').click(); }; container.appendChild(key); }); }
-    
-    // ========== 播放逻辑 ==========
-    function initAudio() { if(!audioCtx) audioCtx=new (window.AudioContext||window.webkitAudioContext)(); return audioCtx; }
-    function playGrid() { 
-        let hasAny = false;
-        for(let r=0;r<ROWS;r++) for(let c=0;c<COLS;c++) if(gridData[r][c]) hasAny=true;
-        if(!hasAny){toast(t('noMusic'));return;} 
-        if(isPlaying) stopPlayback(); 
-        initAudio(); audioCtx.resume(); 
-        isPlaying=true; 
-        document.getElementById('pauseBtn').disabled=false; 
-        document.getElementById('playBtn').disabled=true; 
-        let startIdx=(seekTarget>=0 && seekTarget<ROWS*COLS)?seekTarget:0; 
-        seekTarget=-1; 
-        playCellByIndex(startIdx); 
+
+    // ========== 钢琴键盘生成 ==========
+    const notesList = (() => {
+        let r = [];
+        for (let oct = 3; oct <= 6; oct++) {
+            for (let n of ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B']) {
+                r.push({
+                    name: n + oct,
+                    freq: 440 * Math.pow(2, ((oct - 4) * 12 + ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'].indexOf(n) - 9) / 12),
+                    isSharp: n.includes('#')
+                });
+            }
+        }
+        return r;
+    })();
+
+    function buildPiano() {
+        let container = document.getElementById('pianoKeyboard');
+        container.innerHTML = '';
+        notesList.forEach(note => {
+            let key = document.createElement('div');
+            key.className = `key ${note.isSharp ? 'black-key' : 'white-key'} ${currentPitch.name === note.name ? 'selected' : ''}`;
+            let label = document.createElement('div');
+            label.className = 'key-label';
+            label.textContent = note.name;
+            key.appendChild(label);
+            key.onclick = (e) => {
+                e.stopPropagation();
+                currentPitch = { name: note.name, freq: note.freq };
+                document.querySelectorAll('#pianoKeyboard .key').forEach(k => k.classList.remove('selected'));
+                key.classList.add('selected');
+                toast(`🎼 ${currentPitch.name}`);
+                if (isRestMode) document.getElementById('noteModeBtn').click();
+            };
+            container.appendChild(key);
+        });
     }
-    function playCellByIndex(idx) { if(!isPlaying) return; let total=ROWS*COLS; if(idx>=total){stopPlayback();return;} let row=Math.floor(idx/COLS),col=idx%COLS; let cell=gridData[row][col]; let percent=(idx+1)/total; document.getElementById('progressBar').style.width=(percent*100)+'%'; document.getElementById('progressThumb').style.left=(percent*100)+'%'; if(cell && audioCtx){ let now=audioCtx.currentTime; let osc=audioCtx.createOscillator(),gain=audioCtx.createGain(); osc.connect(gain); gain.connect(audioCtx.destination); osc.frequency.value=cell.freq; gain.gain.value=0.2; osc.start(now); gain.gain.exponentialRampToValueAtTime(0.0001, now+currentSpeed); osc.stop(now+currentSpeed); } highlightGridCell(row,col,true); playTimeout=setTimeout(()=>{ highlightGridCell(row,col,false); playCellByIndex(idx+1); }, currentSpeed*1000); }
-    function highlightGridCell(row,col,active) { let container=document.getElementById('collabGrid'); if(!container||row<0) return; let idx=row*COLS+col; let child=container.children[idx]; if(child) child.style.boxShadow=active?"0 0 0 2px #e6bc8b":""; }
-    function stopPlayback(){ if(playTimeout)clearTimeout(playTimeout); isPlaying=false; document.getElementById('pauseBtn').disabled=true; document.getElementById('playBtn').disabled=false; if(audioCtx) audioCtx.suspend(); document.getElementById('progressBar').style.width='0%'; document.getElementById('progressThumb').style.left='0%'; highlightGridCell(-1,-1,false); }
-    function pausePlayback(){ if(playTimeout)clearTimeout(playTimeout); isPlaying=false; document.getElementById('pauseBtn').disabled=true; document.getElementById('playBtn').disabled=false; if(audioCtx) audioCtx.suspend(); }
-    function initProgressDrag(){ let wrap=document.getElementById('progressWrap'); let update=(e)=>{ let rect=wrap.getBoundingClientRect(); let x=e.touches?e.touches[0].clientX:e.clientX; let percent=Math.min(1,Math.max(0,(x-rect.left)/rect.width)); let total=ROWS*COLS; let target=Math.floor(percent*total); if(target>=total) target=total-1; seekTarget=target; document.getElementById('progressBar').style.width=(percent*100)+'%'; document.getElementById('progressThumb').style.left=(percent*100)+'%'; if(isPlaying){ if(playTimeout)clearTimeout(playTimeout); playCellByIndex(seekTarget); } }; wrap.addEventListener('mousedown',(e)=>{e.preventDefault();update(e);let move=(m)=>{m.preventDefault();update(m);}; let up=()=>{document.removeEventListener('mousemove',move);document.removeEventListener('mouseup',up);}; document.addEventListener('mousemove',move);document.addEventListener('mouseup',up);}); wrap.addEventListener('touchstart',(e)=>{e.preventDefault();update(e);let move=(m)=>{m.preventDefault();update(m);}; let end=()=>{document.removeEventListener('touchmove',move);document.removeEventListener('touchend',end);}; document.addEventListener('touchmove',move);document.addEventListener('touchend',end);}); }
-    function exportScore(){ let txt="🎵 全球協作樂譜 (20x10)\n"; for(let r=0;r<ROWS;r++){ for(let c=0;c<COLS;c++){ let cell=gridData[r][c]; txt+=(cell?cell.name:"⏸")+"\t"; } txt+="\n"; } let blob=new Blob([txt],{type:'text/plain'}); let a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download=`collab_score_${Date.now()}.txt`; a.click(); }
-    
-    // ========== 初始化 ==========
+
+    // ========== 音频播放系统 ==========
+    function initAudio() {
+        if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        return audioCtx;
+    }
+
+    function playGrid() {
+        let hasAny = false;
+        for (let r = 0; r < ROWS; r++)
+            for (let c = 0; c < COLS; c++)
+                if (gridData[r][c]) hasAny = true;
+
+        if (!hasAny) {
+            toast(t('noMusic'));
+            return;
+        }
+        if (isPlaying) stopPlayback();
+        initAudio();
+        audioCtx.resume();
+        isPlaying = true;
+        document.getElementById('pauseBtn').disabled = false;
+        document.getElementById('playBtn').disabled = true;
+
+        let startIdx = (seekTarget >= 0 && seekTarget < ROWS * COLS) ? seekTarget : 0;
+        seekTarget = -1;
+        playCellByIndex(startIdx);
+    }
+
+    function playCellByIndex(idx) {
+        if (!isPlaying) return;
+        let total = ROWS * COLS;
+        if (idx >= total) {
+            stopPlayback();
+            return;
+        }
+        let row = Math.floor(idx / COLS), col = idx % COLS;
+        let cell = gridData[row][col];
+        let percent = (idx + 1) / total;
+
+        document.getElementById('progressBar').style.width = (percent * 100) + '%';
+        document.getElementById('progressThumb').style.left = (percent * 100) + '%';
+
+        if (cell && audioCtx) {
+            let now = audioCtx.currentTime;
+            let osc = audioCtx.createOscillator(), gain = audioCtx.createGain();
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+            osc.frequency.value = cell.freq;
+            gain.gain.value = 0.2;
+            osc.start(now);
+            gain.gain.exponentialRampToValueAtTime(0.0001, now + currentSpeed);
+            osc.stop(now + currentSpeed);
+        }
+
+        highlightGridCell(row, col, true);
+        playTimeout = setTimeout(() => {
+            highlightGridCell(row, col, false);
+            playCellByIndex(idx + 1);
+        }, currentSpeed * 1000);
+    }
+
+    function highlightGridCell(row, col, active) {
+        let container = document.getElementById('collabGrid');
+        if (!container || row < 0) return;
+        let idx = row * COLS + col;
+        let child = container.children[idx];
+        if (child) child.style.boxShadow = active ? "0 0 0 2px #e6bc8b" : "";
+    }
+
+    function stopPlayback() {
+        if (playTimeout) clearTimeout(playTimeout);
+        isPlaying = false;
+        document.getElementById('pauseBtn').disabled = true;
+        document.getElementById('playBtn').disabled = false;
+        if (audioCtx) audioCtx.suspend();
+        document.getElementById('progressBar').style.width = '0%';
+        document.getElementById('progressThumb').style.left = '0%';
+        highlightGridCell(-1, -1, false);
+    }
+
+    function pausePlayback() {
+        if (playTimeout) clearTimeout(playTimeout);
+        isPlaying = false;
+        document.getElementById('pauseBtn').disabled = true;
+        document.getElementById('playBtn').disabled = false;
+        if (audioCtx) audioCtx.suspend();
+    }
+
+    // 进度条拖拽跳转
+    function initProgressDrag() {
+        let wrap = document.getElementById('progressWrap');
+        let update = (e) => {
+            let rect = wrap.getBoundingClientRect();
+            let x = e.touches ? e.touches[0].clientX : e.clientX;
+            let percent = Math.min(1, Math.max(0, (x - rect.left) / rect.width));
+            let total = ROWS * COLS;
+            let target = Math.floor(percent * total);
+            if (target >= total) target = total - 1;
+            seekTarget = target;
+
+            document.getElementById('progressBar').style.width = (percent * 100) + '%';
+            document.getElementById('progressThumb').style.left = (percent * 100) + '%';
+
+            if (isPlaying) {
+                if (playTimeout) clearTimeout(playTimeout);
+                playCellByIndex(seekTarget);
+            }
+        };
+
+        wrap.addEventListener('mousedown', (e) => {
+            e.preventDefault();
+            update(e);
+            let move = m => { m.preventDefault(); update(m); };
+            let up = () => {
+                document.removeEventListener('mousemove', move);
+                document.removeEventListener('mouseup', up);
+            };
+            document.addEventListener('mousemove', move);
+            document.addEventListener('mouseup', up);
+        });
+
+        wrap.addEventListener('touchstart', (e) => {
+            e.preventDefault();
+            update(e);
+            let move = m => { m.preventDefault(); update(m); };
+            let end = () => {
+                document.removeEventListener('touchmove', move);
+                document.removeEventListener('touchend', end);
+            };
+            document.addEventListener('touchmove', move);
+            document.addEventListener('touchend', end);
+        });
+    }
+
+    // 导出乐谱 TXT
+    function exportScore() {
+        let txt = "🎵 全球協作樂譜 (20x10)\n";
+        for (let r = 0; r < ROWS; r++) {
+            for (let c = 0; c < COLS; c++) {
+                let cell = gridData[r][c];
+                txt += (cell ? cell.name : "⏸") + "\t";
+            }
+            txt += "\n";
+        }
+        let blob = new Blob([txt], { type: 'text/plain' });
+        let a = document.createElement('a');
+        a.href = URL.createObjectURL(blob);
+        a.download = `collab_score_${Date.now()}.txt`;
+        a.click();
+    }
+
+    // 同步播放速度按钮状态
+    function updatePlaybackSpeedUI() {
+        document.querySelectorAll('.rhythm-btn').forEach(btn => {
+            if (Math.abs(parseFloat(btn.dataset.speed) - currentSpeed) < 0.01)
+                btn.classList.add('active');
+            else
+                btn.classList.remove('active');
+        });
+    }
+
+    // ========== 页面初始化入口 ==========
     document.addEventListener('DOMContentLoaded', async () => {
         buildLangSwitcher();
         buildPiano();
         initProgressDrag();
         updateUI();
+        updatePlaybackSpeedUI();
+
+        // 加载云端数据 + 开启实时订阅
         await loadGridFromSupabase();
         subscribeToRealtime();
         startCooldownTimer();
-        document.getElementById('playBtn').onclick=playGrid;
-        document.getElementById('pauseBtn').onclick=pausePlayback;
-        document.getElementById('stopBtn').onclick=stopPlayback;
-        document.getElementById('exportBtn').onclick=exportScore;
-        document.getElementById('noteModeBtn').onclick=()=>{ isRestMode=false; document.getElementById('noteModeBtn').classList.add('active'); document.getElementById('restActionBtn').classList.remove('active'); toast("🎵 "+t('noteMode')); };
-        document.getElementById('restActionBtn').onclick=()=>{ isRestMode=true; document.getElementById('restActionBtn').classList.add('active'); document.getElementById('noteModeBtn').classList.remove('active'); toast(t('restAction')); };
-        document.querySelectorAll('.rhythm-btn').forEach(btn=>{ btn.onclick=()=>{ document.querySelectorAll('.rhythm-btn').forEach(b=>b.classList.remove('active')); btn.classList.add('active'); currentSpeed=parseFloat(btn.dataset.speed); }; });
-        setInterval(()=>{ let fake=Math.floor(Math.random()*800+800); document.getElementById('onlineCounter').innerHTML=`🌐 共同創作 · 即時同步 · ${fake} 人在線`; }, 8000);
+
+        // 按钮事件绑定
+        document.getElementById('playBtn').onclick = playGrid;
+        document.getElementById('pauseBtn').onclick = pausePlayback;
+        document.getElementById('stopBtn').onclick = stopPlayback;
+        document.getElementById('exportBtn').onclick = exportScore;
+
+        document.getElementById('noteModeBtn').onclick = () => {
+            isRestMode = false;
+            document.getElementById('noteModeBtn').classList.add('active');
+            document.getElementById('restActionBtn').classList.remove('active');
+            toast("🎵 " + t('noteMode'));
+        };
+        document.getElementById('restActionBtn').onclick = () => {
+            isRestMode = true;
+            document.getElementById('restActionBtn').classList.add('active');
+            document.getElementById('noteModeBtn').classList.remove('active');
+            toast(t('restAction'));
+        };
+
+        document.querySelectorAll('.rhythm-btn').forEach(btn => {
+            btn.onclick = () => {
+                document.querySelectorAll('.rhythm-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                currentSpeed = parseFloat(btn.dataset.speed);
+            };
+        });
+
+        // 模拟在线人数
+        setInterval(() => {
+            let fake = Math.floor(Math.random() * 800 + 800);
+            document.getElementById('onlineCounter').innerHTML = `🌐 共同創作 · 在線 ${fake}`;
+        }, 8000);
     });
-    window.addEventListener('beforeunload',()=>{ if(playTimeout)clearTimeout(playTimeout); if(cooldownInterval)clearInterval(cooldownInterval); if(audioCtx) audioCtx.close(); });
+
+    // 页面卸载清理
+    window.addEventListener('beforeunload', () => {
+        if (playTimeout) clearTimeout(playTimeout);
+        if (cooldownInterval) clearInterval(cooldownInterval);
+        if (audioCtx) audioCtx.close();
+        if (realtimeChannel) supabase.removeChannel(realtimeChannel);
+    });
 </script>
 </body>
 </html>
